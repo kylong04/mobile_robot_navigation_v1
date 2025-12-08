@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>stm32_diff_drive_hardware</name>
+  <version>0.0.0</version>
+  <description>ROS 2 hardware interface plugin for STM32-based diff drive robot</description>
+  <maintainer email="bluedragon-lab@todo.todo">bluedragon-lab</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <build_depend>rclcpp</build_depend>
+  <build_depend>hardware_interface</build_depend>
+  <build_depend>pluginlib</build_depend>
+  <build_depend>stm32_diff_drive_msgs</build_depend>
+  
+  <exec_depend>pluginlib</exec_depend>
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>hardware_interface</exec_depend>
+  <exec_depend>stm32_diff_drive_msgs</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <pluginlib plugin_manifest="${prefix}/stm32_diff_drive_hardware_plugin.xml"/>
+  </export>
+</package>

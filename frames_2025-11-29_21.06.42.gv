@@ -1,0 +1,12 @@
+digraph G {
+"base_link" -> "linkbanhphai"[label=" Broadcaster: default_authority\nAverage rate: 10.434\nBuffer length: 2.3\nMost recent transform: 1764425202.88297\nOldest transform: 1764425200.582824\n"];
+"world" -> "base_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "linkbanhtrai"[label=" Broadcaster: default_authority\nAverage rate: 10.434\nBuffer length: 2.3\nMost recent transform: 1764425202.88297\nOldest transform: 1764425200.582824\n"];
+"base_link" -> "linkphusau"[label=" Broadcaster: default_authority\nAverage rate: 10.434\nBuffer length: 2.3\nMost recent transform: 1764425202.88297\nOldest transform: 1764425200.582824\n"];
+"base_link" -> "linkphutruoc"[label=" Broadcaster: default_authority\nAverage rate: 10.434\nBuffer length: 2.3\nMost recent transform: 1764425202.88297\nOldest transform: 1764425200.582824\n"];
+"base_link" -> "linklidar"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1764425202.8982794"[ shape=plaintext ] ;
+}->"world";
+}

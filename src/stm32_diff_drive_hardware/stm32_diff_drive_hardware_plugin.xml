@@ -1,0 +1,7 @@
+<library path="stm32_diff_drive_hardware">
+  <class name="stm32_diff_drive_hardware/STM32DiffDriveHardware"
+         type="stm32_diff_drive_hardware::STM32DiffDriveHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>STM32 hardware interface over serial.</description>
+  </class>
+</library>

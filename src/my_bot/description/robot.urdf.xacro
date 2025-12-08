@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="my_bot">
+  
+  <xacro:include filename="$(find my_bot)/description/ros2_control.xacro"/>
+
+  <link name="world"/>
+  
+  <!-- /////////////////////////base link/////////////////////////-->
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.00018468 0.0020823 0.043685"
+        rpy="0 0 0" />
+      <mass
+        value="0.65505" />
+      <inertia
+        ixx="0.000725"
+        ixy="-3.7315E-08"
+        ixz="9.5524E-08"
+        iyy="0.00082017"
+        iyz="-1.179E-08"
+        izz="0.00152" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/base_link.STL"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/base_link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="base_joint" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.0705"/>
+  </joint>
+  
+
+  <link
+    name="linkbanhtrai">
+    <inertial>
+      <origin
+        xyz="-6.1291E-08 -0.005722 -6.2111E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.033688" />
+      <inertia
+        ixx="1.2632E-05"
+        ixy="1.0794E-11"
+        ixz="-1.4333E-10"
+        iyy="2.3296E-05"
+        iyz="6.0949E-12"
+        izz="1.2631E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linkbanhtrai.STL"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.29804 0.29804 0.29804 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linkbanhtrai.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="banhtrai"
+    type="continuous">
+    <origin
+      xyz="-5.4224E-05 0.101 0.02"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="linkbanhtrai" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      effort="200"
+      velocity="25" />
+    <dynamics
+      friction="0" />
+  </joint>
+  <link
+    name="linkbanhphai">
+    <inertial>
+      <origin
+        xyz="-1.298E-08 0.005722 -8.6271E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.033688" />
+      <inertia
+        ixx="1.2632E-05"
+        ixy="1.5964E-12"
+        ixz="-5.7392E-10"
+        iyy="2.3296E-05"
+        iyz="-1.2291E-11"
+        izz="1.2632E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linkbanhphai.STL"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0.50196 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linkbanhphai.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="banhphai"
+    type="continuous">
+    <origin
+      xyz="-5.4224E-05 -0.1015 0.02"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="linkbanhphai" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="200"
+      velocity="25" />
+    <dynamics
+      friction="0" />
+  </joint>
+  <link
+    name="linkphutruoc">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.0014368" />
+      <inertia
+        ixx="2.816E-08"
+        ixy="6.7653E-24"
+        ixz="-1.2117E-24"
+        iyy="2.816E-08"
+        iyz="-5.2507E-24"
+        izz="2.816E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linkphutruoc.STL"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.92157 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linkphutruoc.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="phutruoc"
+    type="continuous">
+    <origin
+      xyz="0.067445 0 -0.0086"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="linkphutruoc" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      effort="200"
+      velocity="5" />
+    <dynamics
+      friction="0" />
+  </joint>
+  <link
+    name="linkphusau">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.0014368" />
+      <inertia
+        ixx="2.816E-08"
+        ixy="-4.2409E-24"
+        ixz="5.2507E-24"
+        iyy="2.816E-08"
+        iyz="1.3026E-23"
+        izz="2.816E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linkphusau.STL"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.89804 0.92157 0.92941 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linkphusau.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="phusau"
+    type="continuous">
+    <origin
+      xyz="-0.067555 0 -0.0086"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="linkphusau" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      effort="200"
+      velocity="5" />
+    <dynamics
+      friction="0" />
+  </joint>
+  <link
+    name="linklidar">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0" />
+      <inertia
+        ixx="0"
+        ixy="0"
+        ixz="0"
+        iyy="0"
+        iyz="0"
+        izz="0" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linklidar.STL"/>
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://my_bot/meshes/linklidar.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="lidar"
+    type="fixed">
+    <origin
+      xyz="-0.0070542 0 0.1396"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="linklidar" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <xacro:ros2_control_block/>
+</robot>
+
+  <!-- /////////////////////////transmission/////////////////////////--><!--
+  <transmission name="link_1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+	  <joint name="phutruoc">
+	    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+  	</joint>
+	  <actuator name="link_1_motor">
+	    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+	    <mechanicalReduction>1</mechanicalReduction>
+  	</actuator>  
+  </transmission>
+  < /////////////////////////transmission/////////////////////////
+  <transmission name="link_2_trans">
+	  <type>transmission_interface/SimpleTransmission</type>
+  	<joint name="phusau">
+	    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+	  </joint>
+	  <actuator name="link_2_motor">
+	    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+	    <mechanicalReduction>1</mechanicalReduction>
+  	</actuator>
+  </transmission>
+  < /////////////////////////transmission/////////////////////////
+  <transmission name="link_3_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+	  <joint name="banhphai">
+	    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+  	</joint>
+	  <actuator name="link_3_motor">
+	    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+	    <mechanicalReduction>1</mechanicalReduction>
+  	</actuator>  
+  </transmission>
+  < /////////////////////////transmission/////////////////////////
+  <transmission name="link_4_trans">
+	  <type>transmission_interface/SimpleTransmission</type>
+  	<joint name="banhtrai">
+	    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+	  </joint>
+	  <actuator name="link_4_motor">
+	    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+	    <mechanicalReduction>1</mechanicalReduction>
+  	</actuator>
+  </transmission>-->
