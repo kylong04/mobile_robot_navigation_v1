@@ -56,13 +56,15 @@ def generate_launch_description():
         arguments=["joint_broad", "-c", "/controller_manager", "--controller-manager-timeout", "100"],
     )
 
-    # Thêm node teleop_twist_keyboard để điều khiển robot
-    teleop_node = Node(
-        package='teleop_twist_keyboard',
-        executable='teleop_twist_keyboard',
-        name='teleop_twist_keyboard',
-        remappings=[('/cmd_vel', '/diff_cont/cmd_vel')],  # Remap từ /cmd_vel sang /diff_cont/cmd_vel
-        output='screen'
+    twist_to_stamped_node = Node(
+        package='my_bot',
+        executable='twist_2_twiststamped.py',   # trùng tên file trong scripts/
+        name='twist_2_twiststamped',
+        output='screen',
+        parameters=[
+            {'twist_topic_in': '/cmd_vel'},             # teleop publish
+            {'twiststamped_topic_out': '/diff_cont/cmd_vel'},  # controller subscribe
+        ]
     )
 
     delayed_controller_manager = TimerAction(period=1.0, actions=[controller_manager])
@@ -86,5 +88,5 @@ def generate_launch_description():
         delayed_controller_manager,
         delayed_diff_drive_spawner,
         delayed_joint_broad_spawner,
-        teleop_node
+        twist_to_stamped_node,
     ])
