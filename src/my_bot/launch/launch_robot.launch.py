@@ -26,7 +26,7 @@ def generate_launch_description():
 
     rsp = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                [os.path.join(pkg_path, 'launch', 'rsp.launch_v3.py')]
+                [os.path.join(pkg_path, 'launch', 'bringup.launch.py')]
             ),
             launch_arguments={'use_sim_time': 'true',}.items()
         )
@@ -56,16 +56,25 @@ def generate_launch_description():
         arguments=["joint_broad", "-c", "/controller_manager", "--controller-manager-timeout", "100"],
     )
 
-    twist_to_stamped_node = Node(
-        package='my_bot',
-        executable='twist_2_twiststamped.py',   # trùng tên file trong scripts/
-        name='twist_2_twiststamped',
-        output='screen',
-        parameters=[
-            {'twist_topic_in': '/cmd_vel'},             # teleop publish
-            {'twiststamped_topic_out': '/diff_cont/cmd_vel'},  # controller subscribe
-        ]
+    twist_stamper_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [os.path.join(
+                get_package_share_directory('twist_stamper'),
+                'launch',
+                'twist_stamper.launch.py'
+            )]
+        )
     )
+
+    static_tf_world_odom = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='world_to_odom',
+        # x  y  z  yaw pitch roll  parent  child
+        arguments=['0', '0', '0', '0', '0', '0', 'world', 'odom'],
+        output='screen',
+    )
+
 
     delayed_controller_manager = TimerAction(period=1.0, actions=[controller_manager])
 
@@ -84,9 +93,10 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        static_tf_world_odom,
         rsp,
         delayed_controller_manager,
         delayed_diff_drive_spawner,
         delayed_joint_broad_spawner,
-        twist_to_stamped_node,
+        twist_stamper_launch,
     ])
