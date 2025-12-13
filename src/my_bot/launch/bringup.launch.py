@@ -82,7 +82,7 @@ def generate_launch_description():
         ),
 
         node_robot_state_publisher,
-        node_joint_state_publisher,
+        #node_joint_state_publisher,
         node_sllidar,          # 🔥 Lidar driver
         node_rviz,             # 🔥 Mở RViz tự động
     ])
