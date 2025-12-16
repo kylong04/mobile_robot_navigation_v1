@@ -10,7 +10,7 @@
         <plugin>stm32_diff_drive_hardware/STM32DiffDriveHardware</plugin>
         <param name="left_wheel_name">banhtrai</param>
         <param name="right_wheel_name">banhphai</param>
-        <param name="wheel_radius">0.034</param>    
+        <param name="wheel_radius">0.0325</param>    
         <param name="wheel_separation">0.2025</param>
         <param name="loop_rate">30</param>
         <param name="device">/dev/ttyAMA0</param>

@@ -23,7 +23,7 @@ diff_cont:
 
     cmd_vel_topic: /cmd_vel
     wheel_separation: 0.2025
-    wheel_radius: 0.034
+    wheel_radius: 0.0325
     open_loop: false
     position_feedback: false
     #use_stamped_vel: true
