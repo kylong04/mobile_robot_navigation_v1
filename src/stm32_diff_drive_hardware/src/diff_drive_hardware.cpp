@@ -16,10 +16,6 @@
 #include <fcntl.h>
 // ----------------------------------------------------
 
-//#define DIST_PER_TICK 0.000615 // [m] Khoảng cách di chuyển mỗi tick
-
-const double RADS_TO_RPM = 9.5493; // 60 / (2 * PI)
-
 namespace stm32_diff_drive_hardware
 {
 
@@ -58,7 +54,9 @@ hardware_interface::CallbackReturn STM32DiffDriveHardware::on_init(const hardwar
     // ✅ Lấy wheel_radius và enc_counts_per_rev
     wheel_radius_ = std::stod(info.hardware_parameters.at("wheel_radius"));
     enc_counts_per_rev_ = std::stoi(info.hardware_parameters.at("enc_counts_per_rev"));
-    dist_per_tick_ = 2 * M_PI * wheel_radius_ / static_cast<double>(enc_counts_per_rev_);
+    dist_per_tick_ = 2.0 * M_PI * wheel_radius_ / static_cast<double>(enc_counts_per_rev_);
+
+    RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"),"Init: device=%s, baud=%d, wheel_radius=%.4f, enc_counts_per_rev=%d",port_.c_str(), baudrate_, wheel_radius_, enc_counts_per_rev_);
 
     return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -73,7 +71,7 @@ hardware_interface::CallbackReturn STM32DiffDriveHardware::on_activate(const rcl
         serial_.set_option(boost::asio::serial_port_base::parity(boost::asio::serial_port_base::parity::none));
         serial_.set_option(boost::asio::serial_port_base::flow_control(boost::asio::serial_port_base::flow_control::none));
     } catch (boost::system::system_error & e) {
-        RCLCPP_FATAL(rclcpp::get_logger("STM32Hardware"), "Không thể mở serial: %s", e.what());
+        RCLCPP_FATAL(rclcpp::get_logger("STM32Hardware"), "Không thể mở serial %s: %s", port_.c_str(), e.what());
         return hardware_interface::CallbackReturn::ERROR;
     }
     
@@ -81,8 +79,10 @@ hardware_interface::CallbackReturn STM32DiffDriveHardware::on_activate(const rcl
     std::fill(hw_positions_.begin(), hw_positions_.end(), 0.0);
     std::fill(hw_velocities_.begin(), hw_velocities_.end(), 0.0);
     std::fill(hw_prev_positions_.begin(), hw_prev_positions_.end(), 0.0);
-    //serial_read_buffer_.clear();
 
+    serial_read_buffer_.clear();
+
+    RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "STM32 hardware activated");
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -91,6 +91,7 @@ hardware_interface::CallbackReturn STM32DiffDriveHardware::on_deactivate(const r
     if (serial_.is_open()) {
         serial_.close();
     }
+    RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "STM32 hardware deactivated");
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -100,10 +101,10 @@ hardware_interface::CallbackReturn STM32DiffDriveHardware::on_deactivate(const r
 hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time & time, const rclcpp::Duration & period)
 {
     // Fix warning: Tắt cảnh báo về tham số 'time' không được sử dụng
-    (void)time; 
+    //(void)time; 
     
     if (!serial_.is_open()) {
-        RCLCPP_ERROR(rclcpp::get_logger("STM32Hardware"), "Serial port is not open in read().");
+        RCLCPP_ERROR(rclcpp::get_logger("STM32"), "Serial port is not open in read().");
         return hardware_interface::return_type::ERROR;
     }
 
@@ -113,7 +114,7 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
         // SỬ DỤNG IOCTL HỖ TRỢ NON-BLOCKING
         bytes_available = get_bytes_available(serial_);
     } catch (boost::system::system_error & e) {
-        RCLCPP_ERROR(rclcpp::get_logger("STM32Hardware"), "Serial available check failed: %s", e.what());
+        RCLCPP_ERROR(rclcpp::get_logger("STM32"), "Serial available check failed: %s", e.what());
         return hardware_interface::return_type::ERROR;
     }
 
@@ -125,7 +126,7 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
             size_t bytes_read = serial_.read_some(boost::asio::buffer(temp_buffer, bytes_to_read));
             serial_read_buffer_.append(temp_buffer, bytes_read); // Thêm vào buffer chờ xử lý
         } catch (boost::system::system_error & e) {
-            RCLCPP_ERROR(rclcpp::get_logger("STM32Hardware"), "Serial read_some failed: %s", e.what());
+            RCLCPP_ERROR(rclcpp::get_logger("STM32"), "Serial read_some failed: %s", e.what());
         }
     }
     
@@ -139,7 +140,8 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
     std::string rx = serial_read_buffer_.substr(0, delimiter_pos);
     serial_read_buffer_.erase(0, delimiter_pos + 1); // Xóa gói tin đã xử lý
 
-    RCLCPP_DEBUG(rclcpp::get_logger("STM32Hardware"), "Raw ROS2 RX: %s", rx.c_str());
+    // Debug log nhận dữ liệu
+    RCLCPP_DEBUG(rclcpp::get_logger("STM32Hardware"), "Received data from STM32: '%s'", rx.c_str());
 
     // --- BƯỚC 3: PARSE VÀ CẬP NHẬT TRẠNG THÁI ---
     int tick_r = 0;
@@ -147,13 +149,13 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
     
     // Giao thức TX từ STM32: [TICK_R]r[TICK_L]l (Integer Ticks)
     if (sscanf(rx.c_str(), "%dr%dl", &tick_r, &tick_l) == 2) {
+        RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"),"RX encoder ticks: R=%d, L=%d", tick_r, tick_l);
 
-        double current_pos_l = static_cast<double>(tick_l) * dist_per_tick_;
+        // Chuyển tick thành quãng đường [m]
+        const double current_pos_l = static_cast<double>(tick_l) * dist_per_tick_;
+        const double current_pos_r = static_cast<double>(tick_r) * dist_per_tick_;
 
-        double current_pos_r = static_cast<double>(tick_r) * dist_per_tick_;
-
-
-        double delta_time = period.seconds();
+         const double delta_time = period.seconds();
         
         if (delta_time > 0.0) {
             hw_velocities_[0] = (current_pos_l - hw_prev_positions_[0]) / delta_time; 
@@ -171,10 +173,9 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
 
 
         return hardware_interface::return_type::OK;
+    } else {
+        RCLCPP_WARN(rclcpp::get_logger("STM32Hardware"),"Parse error RX: '%s'", rx.c_str());
     }
-    RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "Ticks R=%d L=%d", tick_r, tick_l);
-
-    RCLCPP_WARN(rclcpp::get_logger("STM32Hardware"), "ROS2 Parse Error. Received: %s", rx.c_str());
     return hardware_interface::return_type::OK;
 }
 
@@ -185,55 +186,34 @@ hardware_interface::return_type STM32DiffDriveHardware::write(const rclcpp::Time
 {
     if (!serial_.is_open()) return hardware_interface::return_type::ERROR;
 
-    // Nhận lệnh từ ROS2 (rad/s)
-    // double cmd_left_rad_per_s = hw_commands_[0];  // Tốc độ góc trái (rad/s)
-    // double cmd_right_rad_per_s = hw_commands_[1]; // Tốc độ góc phải (rad/s)
-
-    //double cmd_left_rad_per_s = 14;  // Tốc độ góc cố định cho bánh trái (rad/s)
-    //double cmd_right_rad_per_s = 14; // Tốc độ góc cố định cho bánh phải (rad/s)
-
-    double cmd_left_rad_per_s = hw_commands_[0];;  // Tốc độ góc cố định cho bánh trái (rad/s)
-    double cmd_right_rad_per_s = hw_commands_[1]; // Tốc độ góc cố định cho bánh phải (rad/s)
+     double cmd_left_rad_per_s = hw_commands_[0];;  // Tốc độ góc cố định cho bánh trái (rad/s)
+     double cmd_right_rad_per_s = hw_commands_[1]; // Tốc độ góc cố định cho bánh phải (rad/s)
+    // float cmd_left_rad_per_s = 500;  // Tốc độ góc cố định cho bánh trái (rad/s)
+    // float cmd_right_rad_per_s = 500; // Tốc độ góc cố định cho bánh phải (rad/s)
     
-    // float target_rpm_r = static_cast<float>(cmd_r_rads * RADS_TO_RPM);
-    // float target_rpm_l = static_cast<float>(cmd_l_rads * RADS_TO_RPM);
+    // Tuỳ ý: giới hạn tốc độ để không điên
+    constexpr float MAX_RAD_S = 50.0;
+    constexpr float MIN_RAD_S = -50.0;
 
-    // Dùng để test pumw bánh xe
-    // float target_rpm_r = 500.0f; // Tốc độ cố định 50 RPM cho bánh phải
-    // float target_rpm_l = 500.0f; // Tốc độ cố định 50 RPM cho bánh trái
-    
-    // float target_rpm_left = cmd_left_rad_per_s * RADS_TO_RPM;
-    // float target_rpm_right = cmd_right_rad_per_s * RADS_TO_RPM;
-    int target_rad_per_s_right_int = static_cast<int>(std::round(cmd_right_rad_per_s));
-    int target_rad_per_s_left_int = static_cast<int>(std::round(cmd_left_rad_per_s));
+    // cmd_left_rad_per_s  = std::clamp(cmd_left_rad_per_s,  MIN_RAD_S, MAX_RAD_S);
+    // cmd_right_rad_per_s = std::clamp(cmd_right_rad_per_s, MIN_RAD_S, MAX_RAD_S);
 
-    // // BƯỚC 1: Chuyển RPM (float) sang Số nguyên (int) bằng cách làm tròn
-    // // Ví dụ: 477.465 -> 477
-    // int target_rpm_right_int = static_cast<int>(std::round(target_rpm_right));
-    // int target_rpm_left_int = static_cast<int>(std::round(target_rpm_left));
-
-    RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "DEBUG ROS2: hw_commands: Left = %.3f rad/s, Right = %.3f rad/s", hw_commands_[0], hw_commands_[1]);
+    RCLCPP_INFO(rclcpp::get_logger("STM32"), "Send cmd(rad/s): L=%.3f, R=%.3f", cmd_left_rad_per_s, cmd_right_rad_per_s);
 
     std::ostringstream ss;
+    ss << std::fixed << std::setprecision(2)
+       << cmd_right_rad_per_s << " r " << cmd_left_rad_per_s << " l\n";
     
-    // Giao thức TX: [RPM_R] r [RPM_L] l\n (KHỚP CHÍNH XÁC VỚI STM32 RX)
-    // SỬ DỤNG DẤU CÁCH VÌ STM32 CÓ %f r %f l
-    //ss << target_rpm_r << " r " << target_rpm_l << " l\n";
-    //ss << target_rpm_right << " r " << target_rpm_left << " l\r\n";
-    //ss << "R" << target_rpm_right << "L" << target_rpm_left << "\r\n";
-    //ss << "R" << target_rpm_right << " " << "L" << target_rpm_left << "\n"; // SỬ DỤNG "\n" HOẶC "\r\n" VÀ ĐẢM BẢO KHOẢNG TRẮNG TRƯỚC 'L'
-    ss << target_rad_per_s_right_int << " r " << target_rad_per_s_left_int << " l\n";
-    //RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "→ hw_commands: Left = %.3f rad/s | Right = %.3f rad/s", cmd_left_rad_per_s, cmd_right_rad_per_s);
-
-    //RCLCPP_DEBUG(rclcpp::get_logger("STM32Hardware"), "Raw TX: %s", ss.str().c_str());
-    RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "Raw ROS2 TX (INT rad/s): %s", ss.str().c_str());
-    //RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "Raw ROS2 TX (INT): %s", ss.str().c_str());
+    const std::string tx = ss.str();
+    RCLCPP_INFO(
+        rclcpp::get_logger("STM32"),
+        "TX to STM32: '%s'", tx.c_str());
     
     try {
         // boost::asio::write là blocking, nhưng vì TX thường nhanh hơn RX, ta chấp nhận
         boost::asio::write(serial_, boost::asio::buffer(ss.str()));
     } catch (boost::system::system_error & e) {
-        RCLCPP_ERROR(rclcpp::get_logger("STM32Hardware"), "Serial write error: %s", e.what());
+        RCLCPP_ERROR(rclcpp::get_logger("STM32"), "Serial write error: %s", e.what());
         return hardware_interface::return_type::ERROR;
     }
 

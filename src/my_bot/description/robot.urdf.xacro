@@ -215,7 +215,7 @@
   </link>
   <joint
     name="phutruoc"
-    type="continuous">
+    type="fixed">
     <origin
       xyz="0.067445 0 -0.0086"
       rpy="0 0 0" />
@@ -273,7 +273,7 @@
   </link>
   <joint
     name="phusau"
-    type="continuous">
+    type="fixed">
     <origin
       xyz="-0.067555 0 -0.0086"
       rpy="0 0 0" />
