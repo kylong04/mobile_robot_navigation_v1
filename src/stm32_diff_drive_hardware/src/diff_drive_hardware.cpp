@@ -186,10 +186,10 @@ hardware_interface::return_type STM32DiffDriveHardware::write(const rclcpp::Time
 {
     if (!serial_.is_open()) return hardware_interface::return_type::ERROR;
 
-     double cmd_left_rad_per_s = hw_commands_[0];;  // Tốc độ góc cố định cho bánh trái (rad/s)
-     double cmd_right_rad_per_s = hw_commands_[1]; // Tốc độ góc cố định cho bánh phải (rad/s)
-    // float cmd_left_rad_per_s = 500;  // Tốc độ góc cố định cho bánh trái (rad/s)
-    // float cmd_right_rad_per_s = 500; // Tốc độ góc cố định cho bánh phải (rad/s)
+     float cmd_left_rad_per_s = hw_commands_[0];;  // Tốc độ góc cố định cho bánh trái (rad/s)
+     float cmd_right_rad_per_s = hw_commands_[1]; // Tốc độ góc cố định cho bánh phải (rad/s)
+    // float cmd_left_rad_per_s = 0;  // Tốc độ góc cố định cho bánh trái (rad/s)
+    // float cmd_right_rad_per_s = 5; // Tốc độ góc cố định cho bánh phải (rad/s)
     
     // Tuỳ ý: giới hạn tốc độ để không điên
     constexpr float MAX_RAD_S = 50.0;
