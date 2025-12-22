@@ -51,10 +51,12 @@ private:
     // hardware params
     std::string port_;
     int baudrate_;
+
     double wheel_radius_;
     int enc_counts_per_rev_;
     double dist_per_tick_ = 0.0;
     double rad_per_tick_;
+
     int last_tick_left_ = 0;
     int last_tick_right_ = 0;
     bool first_read_ = true;
@@ -66,6 +68,10 @@ private:
     double right_position_ = 0.0;
     double right_velocity_ = 0.0;
     double right_command_ = 0.0;
+
+    rclcpp::Time last_rx_time_;
+    double rx_timeout_sec_ = 0.2;  // chỉnh 0.1~0.5 tùy bạn
+    bool first_rx_ = true;
 };
 
 } // namespace stm32_diff_drive_hardware

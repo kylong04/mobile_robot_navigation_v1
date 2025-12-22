@@ -82,6 +82,9 @@ hardware_interface::CallbackReturn STM32DiffDriveHardware::on_activate(const rcl
 
     serial_read_buffer_.clear();
 
+    last_rx_time_ = rclcpp::Clock(RCL_ROS_TIME).now();
+    first_rx_ = true;
+    
     RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "STM32 hardware activated");
     return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -108,6 +111,8 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
         return hardware_interface::return_type::ERROR;
     }
 
+    const auto now = rclcpp::Clock(RCL_ROS_TIME).now();
+
     // --- BƯỚC 1: ĐỌC DỮ LIỆU KHÔNG CHẶN (NON-BLOCKING) ---
     size_t bytes_available = 0;
     try {
@@ -116,25 +121,37 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
     } catch (boost::system::system_error & e) {
         RCLCPP_ERROR(rclcpp::get_logger("STM32"), "Serial available check failed: %s", e.what());
         return hardware_interface::return_type::ERROR;
-    }
+    }  
 
     if (bytes_available > 0) {
         try {
             char temp_buffer[256];
-            size_t bytes_to_read = std::min(bytes_available, sizeof(temp_buffer));
+            const size_t bytes_to_read = std::min(bytes_available, sizeof(temp_buffer));
             // Đọc tất cả các byte có sẵn (NON-BLOCKING)
-            size_t bytes_read = serial_.read_some(boost::asio::buffer(temp_buffer, bytes_to_read));
+            const size_t bytes_read = serial_.read_some(boost::asio::buffer(temp_buffer, bytes_to_read));
             serial_read_buffer_.append(temp_buffer, bytes_read); // Thêm vào buffer chờ xử lý
         } catch (boost::system::system_error & e) {
             RCLCPP_ERROR(rclcpp::get_logger("STM32"), "Serial read_some failed: %s", e.what());
         }
+    } else {
+        // KHÔNG có byte mới → xử lý timeout
+        if (!first_rx_ && (now - last_rx_time_).seconds() > rx_timeout_sec_) {
+            hw_velocities_[0] = 0.0;
+            hw_velocities_[1] = 0.0;
+        }
+        return hardware_interface::return_type::OK;
     }
     
     // --- BƯỚC 2: PHÂN TÍCH BUFFER CHO GÓI TIN ĐẦY ĐỦ ---
     size_t delimiter_pos = serial_read_buffer_.find('\n');
+
     if (delimiter_pos == std::string::npos) {
-        // Gói tin chưa hoàn chỉnh, trả về OK ngay lập tức (NON-BLOCKING!)
-        return hardware_interface::return_type::OK; 
+        // Chưa có gói đầy đủ -> nếu quá timeout thì set vel=0
+        if (!first_rx_ && (now - last_rx_time_).seconds() > rx_timeout_sec_) {
+            hw_velocities_[0] = 0.0;
+            hw_velocities_[1] = 0.0;
+        }
+        return hardware_interface::return_type::OK;
     }
     
     std::string rx = serial_read_buffer_.substr(0, delimiter_pos);
@@ -151,11 +168,14 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
     if (sscanf(rx.c_str(), "%dr%dl", &tick_r, &tick_l) == 2) {
         RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"),"RX encoder ticks: R=%d, L=%d", tick_r, tick_l);
 
+        last_rx_time_ = now;
+        first_rx_ = false;
+
         // Chuyển tick thành quãng đường [m]
         const double current_pos_l = static_cast<double>(tick_l) * dist_per_tick_;
         const double current_pos_r = static_cast<double>(tick_r) * dist_per_tick_;
 
-         const double delta_time = period.seconds();
+        const double delta_time = period.seconds();
         
         if (delta_time > 0.0) {
             hw_velocities_[0] = (current_pos_l - hw_prev_positions_[0]) / delta_time; 
@@ -188,15 +208,18 @@ hardware_interface::return_type STM32DiffDriveHardware::write(const rclcpp::Time
 
     float cmd_left_rad_per_s = hw_commands_[0];;  // Tốc độ góc cố định cho bánh trái (rad/s)
     float cmd_right_rad_per_s = hw_commands_[1]; // Tốc độ góc cố định cho bánh phải (rad/s)
+<<<<<<< HEAD
+=======
     // float cmd_left_rad_per_s = 0;  // Tốc độ góc cố định cho bánh trái (rad/s)
     // float cmd_right_rad_per_s = 5; // Tốc độ góc cố định cho bánh phải (rad/s)
+>>>>>>> 6a093c0 (fix(rviz): stop odom update when encoder ticks timeout)
     
     // Tuỳ ý: giới hạn tốc độ để không điên
     constexpr float MAX_RAD_S = 50.0;
     constexpr float MIN_RAD_S = -50.0;
 
-    // cmd_left_rad_per_s  = std::clamp(cmd_left_rad_per_s,  MIN_RAD_S, MAX_RAD_S);
-    // cmd_right_rad_per_s = std::clamp(cmd_right_rad_per_s, MIN_RAD_S, MAX_RAD_S);
+    cmd_left_rad_per_s  = std::clamp(cmd_left_rad_per_s,  MIN_RAD_S, MAX_RAD_S);
+    cmd_right_rad_per_s = std::clamp(cmd_right_rad_per_s, MIN_RAD_S, MAX_RAD_S);
 
     RCLCPP_INFO(rclcpp::get_logger("STM32"), "Send cmd(rad/s): L=%.3f, R=%.3f", cmd_left_rad_per_s, cmd_right_rad_per_s);
 
