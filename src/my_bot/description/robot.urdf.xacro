@@ -108,7 +108,7 @@
     <child
       link="linkbanhtrai" />
     <axis
-      xyz="0 -1 0" />
+      xyz="0 1 0" />
     <limit
       effort="200"
       velocity="25" />

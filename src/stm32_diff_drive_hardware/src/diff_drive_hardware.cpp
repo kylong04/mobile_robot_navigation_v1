@@ -55,6 +55,7 @@ hardware_interface::CallbackReturn STM32DiffDriveHardware::on_init(const hardwar
     wheel_radius_ = std::stod(info.hardware_parameters.at("wheel_radius"));
     enc_counts_per_rev_ = std::stoi(info.hardware_parameters.at("enc_counts_per_rev"));
     dist_per_tick_ = 2.0 * M_PI * wheel_radius_ / static_cast<double>(enc_counts_per_rev_);
+    rad_per_tick_ = 2.0 * M_PI / static_cast<double>(enc_counts_per_rev_);
 
     RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"),"Init: device=%s, baud=%d, wheel_radius=%.4f, enc_counts_per_rev=%d",port_.c_str(), baudrate_, wheel_radius_, enc_counts_per_rev_);
 
@@ -152,8 +153,9 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
         RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"),"RX encoder ticks: R=%d, L=%d", tick_r, tick_l);
 
         // Chuyển tick thành quãng đường [m]
-        const double current_pos_l = static_cast<double>(tick_l) * dist_per_tick_;
-        const double current_pos_r = static_cast<double>(tick_r) * dist_per_tick_;
+        const double current_pos_l = static_cast<double>(tick_l) * rad_per_tick_;  // [rad]
+        const double current_pos_r = static_cast<double>(tick_r) * rad_per_tick_;  // [rad]
+
 
          const double delta_time = period.seconds();
         
