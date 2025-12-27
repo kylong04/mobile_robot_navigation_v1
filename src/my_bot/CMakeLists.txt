@@ -28,6 +28,7 @@ find_package(urdf REQUIRED)
 find_package(ros2_control REQUIRED)
 find_package(diff_drive_controller REQUIRED)
 find_package(controller_manager REQUIRED)
+find_package(slam_toolbox REQUIRED) 
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
