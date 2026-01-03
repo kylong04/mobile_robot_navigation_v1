@@ -16,7 +16,6 @@ diff_cont:
     base_frame_id: base_link
     odom_frame_id: odom          # <--- thêm
     enable_odom_tf: true         # <--- thêm (nếu plugin hỗ trợ)
-    publish_odom: true           # <--- thêm (tuỳ version diff_drive_controller)
 
     left_wheel_names: ['banhtrai']
     right_wheel_names: ['banhphai']

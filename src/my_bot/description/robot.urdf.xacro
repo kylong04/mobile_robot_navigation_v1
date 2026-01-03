@@ -6,7 +6,7 @@
   
   <xacro:include filename="$(find my_bot)/description/ros2_control.xacro"/>
 
-  <link name="world"/>
+
   
   <!-- /////////////////////////base link/////////////////////////-->
   <link
@@ -50,11 +50,7 @@
     </collision>
   </link>
 
-  <joint name="base_joint" type="fixed">
-    <parent link="world"/>
-    <child link="base_link"/>
-    <origin rpy="0 0 0" xyz="0.0 0.0 0.0705"/>
-  </joint>
+  
   
   <joint name="base_footprint_joint" type="fixed">
         <parent link="base_link"/>

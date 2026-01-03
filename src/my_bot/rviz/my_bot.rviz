@@ -5,17 +5,23 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /Grid1
         - /RobotModel1
-        - /RobotModel1/Status1
         - /LaserScan1
         - /Grid2
+        - /Map1
       Splitter Ratio: 0.5
-    Tree Height: 595
+    Tree Height: 101
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
 Visualization Manager:
   Class: ""
   Displays:
-    - Alpha: 0.5
-      Cell Size: 0.5
+    - Alpha: 0.30000001192092896
+      Cell Size: 0.20000000298023224
       Class: rviz_default_plugins/Grid
       Color: 160; 160; 160
       Enabled: true
@@ -29,7 +35,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 20
+      Plane Cell Count: 50
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 1
@@ -50,6 +56,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         base_link:
           Alpha: 1
           Show Axes: false
@@ -80,10 +90,6 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        world:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -133,6 +139,8 @@ Visualization Manager:
       Frame Timeout: 10
       Frames:
         All Enabled: true
+        base_footprint:
+          Value: true
         base_link:
           Value: true
         linkbanhphai:
@@ -145,9 +153,9 @@ Visualization Manager:
           Value: true
         linkphutruoc:
           Value: true
-        odom:
+        map:
           Value: true
-        world:
+        odom:
           Value: true
       Marker Scale: 0.30000001192092896
       Name: TF
@@ -155,20 +163,21 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        odom:
-          {}
-        world:
-          base_link:
-            linkbanhphai:
-              {}
-            linkbanhtrai:
-              {}
-            linklidar:
-              {}
-            linkphusau:
-              {}
-            linkphutruoc:
-              {}
+        map:
+          odom:
+            base_link:
+              base_footprint:
+                {}
+              linkbanhphai:
+                {}
+              linkbanhtrai:
+                {}
+              linklidar:
+                {}
+              linkphusau:
+                {}
+              linkphutruoc:
+                {}
       Update Interval: 0
       Value: true
     - Alpha: 0.5
@@ -189,6 +198,29 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
+    - Alpha: 0.699999988079071
+      Binary representation: false
+      Binary threshold: 100
+      Class: rviz_default_plugins/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /map
+      Update Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /map_updates
+      Use Timestamp: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -208,34 +240,46 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz_default_plugins/Orbit
-      Distance: 0.8070259094238281
+      Angle: 1.5844999551773071
+      Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
-      Focal Point:
-        X: 0
-        Y: 0
-        Z: 0.20000000298023224
-      Focal Shape Fixed Size: true
-      Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.17520365118980408
+      Scale: 172.10382080078125
       Target Frame: <Fixed Frame>
-      Value: Orbit (rviz_default_plugins)
-      Yaw: 5.6061811447143555
-    Saved: ~
+      Value: TopDownOrtho (rviz_default_plugins)
+      X: 1.493321418762207
+      Y: -0.8508843779563904
+    Saved:
+      - Angle: 1.5844999551773071
+        Class: rviz_default_plugins/TopDownOrtho
+        Enable Stereo Rendering:
+          Stereo Eye Separation: 0.05999999865889549
+          Stereo Focal Distance: 1
+          Swap Stereo Eyes: false
+          Value: false
+        Invert Z Axis: false
+        Name: TopDownOrtho
+        Near Clip Distance: 0.009999999776482582
+        Scale: 172.10382080078125
+        Target Frame: <Fixed Frame>
+        Value: TopDownOrtho (rviz_default_plugins)
+        X: 1.493321418762207
+        Y: -0.8508843779563904
 Window Geometry:
   Displays:
     collapsed: false
   Height: 831
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002a7000002e1fc0200000001fb000000100044006900730070006c006100790073010000003f000002e1000000cc00ffffff000002bb000002e100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd000000010000000000000196000002e1fc0200000002fb000000100044006900730070006c006100790073010000003f000000f3000000cc00fffffffb0000000a005600690065007700730100000138000001e8000000a900ffffff000003cc000002e100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Views:
+    collapsed: false
   Width: 1384
   X: 56
   Y: 32

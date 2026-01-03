@@ -28,7 +28,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 [os.path.join(pkg_path, 'launch', 'bringup.launch.py')]
             ),
-            launch_arguments={'use_sim_time': 'true',}.items()
+            launch_arguments={'use_sim_time': 'false',}.items()
         )
 
     controller_params_file = os.path.join(pkg_path, 'config', 'my_controllers.yaml')
@@ -66,14 +66,7 @@ def generate_launch_description():
         )
     )
 
-    static_tf_world_odom = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='world_to_odom',
-        # x  y  z  yaw pitch roll  parent  child
-        arguments=['0', '0', '0', '0', '0', '0', 'world', 'odom'],
-        output='screen',
-    )
+
 
 
     delayed_controller_manager = TimerAction(period=1.0, actions=[controller_manager])
@@ -93,7 +86,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        static_tf_world_odom,
+
         rsp,
         delayed_controller_manager,
         delayed_diff_drive_spawner,
