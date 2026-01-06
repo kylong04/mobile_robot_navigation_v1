@@ -83,6 +83,9 @@ hardware_interface::CallbackReturn STM32DiffDriveHardware::on_activate(const rcl
 
     serial_read_buffer_.clear();
 
+    first_encoder_read_ = true;
+    last_encoder_time_ = rclcpp::Time(0, 0, RCL_ROS_TIME);
+
     RCLCPP_INFO(rclcpp::get_logger("STM32Hardware"), "STM32 hardware activated");
     return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -155,10 +158,28 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
         // Chuyển tick thành quãng đường [m]
         const double current_pos_l = static_cast<double>(tick_l) * rad_per_tick_;  // [rad]
         const double current_pos_r = static_cast<double>(tick_r) * rad_per_tick_;  // [rad]
-
-
-         const double delta_time = period.seconds();
         
+        // ===== dt theo thời gian thật giữa 2 lần nhận encoder (ROS time) =====
+        if (first_encoder_read_) {
+            last_encoder_time_ = time;
+            first_encoder_read_ = false;
+
+            // Khởi tạo để tránh spike vận tốc ở lần đầu
+            hw_prev_positions_[0] = current_pos_l;
+            hw_prev_positions_[1] = current_pos_r;
+            hw_positions_[0] = current_pos_l;
+            hw_positions_[1] = current_pos_r;
+            hw_velocities_[0] = 0.0;
+            hw_velocities_[1] = 0.0;
+
+            return hardware_interface::return_type::OK;
+        }
+
+        //const double delta_time = period.seconds();
+        const double delta_time = (time - last_encoder_time_).seconds();
+        last_encoder_time_ = time;
+
+
         if (delta_time > 0.0) {
             hw_velocities_[0] = (current_pos_l - hw_prev_positions_[0]) / delta_time; 
             hw_velocities_[1] = (current_pos_r - hw_prev_positions_[1]) / delta_time; 
@@ -166,7 +187,6 @@ hardware_interface::return_type STM32DiffDriveHardware::read(const rclcpp::Time 
             hw_velocities_[0] = 0.0;
             hw_velocities_[1] = 0.0;
         }
-        
         hw_prev_positions_[0] = current_pos_l;
         hw_prev_positions_[1] = current_pos_r;
         
@@ -213,7 +233,7 @@ hardware_interface::return_type STM32DiffDriveHardware::write(const rclcpp::Time
     
     try {
         // boost::asio::write là blocking, nhưng vì TX thường nhanh hơn RX, ta chấp nhận
-        boost::asio::write(serial_, boost::asio::buffer(ss.str()));
+        boost::asio::write(serial_, boost::asio::buffer(tx));
     } catch (boost::system::system_error & e) {
         RCLCPP_ERROR(rclcpp::get_logger("STM32"), "Serial write error: %s", e.what());
         return hardware_interface::return_type::ERROR;
