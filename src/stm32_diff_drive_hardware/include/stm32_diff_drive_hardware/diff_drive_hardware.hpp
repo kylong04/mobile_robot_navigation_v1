@@ -3,7 +3,7 @@
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "rclcpp/time.hpp"
+
 #include <boost/asio.hpp>
 #include <string>
 #include <vector>
@@ -47,9 +47,7 @@ private:
      * Lưu trữ vị trí của chu kỳ trước đó để tính toán vận tốc hiện tại.
      */
     std::vector<double> hw_prev_positions_; 
-    rclcpp::Time last_encoder_time_;
-    bool first_encoder_read_{true};
-
+    
     // hardware params
     std::string port_;
     int baudrate_;
