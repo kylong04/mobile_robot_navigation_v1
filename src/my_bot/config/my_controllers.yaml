@@ -36,15 +36,15 @@ diff_cont:
         max_velocity: 0.1
         min_velocity: -0.1
         has_acceleration_limits: true
-        max_acceleration: 1.0
+        max_acceleration: 0.6
         min_acceleration: -1.2
         has_jerk_limits: false
     angular:
       z:
         has_velocity_limits: true
-        max_velocity: 0.1
-        min_velocity: -0.1
+        max_velocity: 0.6
+        min_velocity: -0.6
         has_acceleration_limits: true
-        max_acceleration: 1.0
-        min_acceleration: -1.2
+        max_acceleration: 0.9
+        min_acceleration: -2.0
         has_jerk_limits: false

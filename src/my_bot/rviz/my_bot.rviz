@@ -1,6 +1,6 @@
 Panels:
   - Class: rviz_common/Displays
-    Help Height: 78
+    Help Height: 70
     Name: Displays
     Property Tree Widget:
       Expanded:
@@ -11,12 +11,14 @@ Panels:
         - /Grid2
         - /Map1
       Splitter Ratio: 0.5
-    Tree Height: 101
+    Tree Height: 70
   - Class: rviz_common/Views
     Expanded:
       - /Current View1
     Name: Views
     Splitter Ratio: 0.5
+  - Class: slam_toolbox::SlamToolboxPlugin
+    Name: SlamToolboxPlugin
 Visualization Manager:
   Class: ""
   Displays:
@@ -164,20 +166,21 @@ Visualization Manager:
       Show Names: true
       Tree:
         map:
-          odom:
-            base_link:
-              base_footprint:
-                {}
-              linkbanhphai:
-                {}
-              linkbanhtrai:
-                {}
-              linklidar:
-                {}
-              linkphusau:
-                {}
-              linkphutruoc:
-                {}
+          {}
+        odom:
+          base_link:
+            base_footprint:
+              {}
+            linkbanhphai:
+              {}
+            linkbanhtrai:
+              {}
+            linklidar:
+              {}
+            linkphusau:
+              {}
+            linkphutruoc:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 0.5
@@ -250,7 +253,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 172.10382080078125
+      Scale: 48.189064025878906
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
       X: 1.493321418762207
@@ -274,12 +277,14 @@ Visualization Manager:
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 831
+  Height: 856
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd000000010000000000000196000002e1fc0200000002fb000000100044006900730070006c006100790073010000003f000000f3000000cc00fffffffb0000000a005600690065007700730100000138000001e8000000a900ffffff000003cc000002e100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000001ce000002fefc0200000003fb000000100044006900730070006c006100790073010000003d000000c9000000c900fffffffb0000000a00560069006500770073010000010c000000a4000000a400fffffffb000000220053006c0061006d0054006f006f006c0062006f00780050006c007500670069006e01000001b6000001850000018500ffffff00000394000002fe00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  SlamToolboxPlugin:
+    collapsed: false
   Views:
     collapsed: false
   Width: 1384
-  X: 56
-  Y: 32
+  X: 475
+  Y: 88
