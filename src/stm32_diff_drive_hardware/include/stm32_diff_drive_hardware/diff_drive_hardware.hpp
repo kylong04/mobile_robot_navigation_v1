@@ -54,7 +54,10 @@ private:
     double wheel_radius_;
     int enc_counts_per_rev_;
     double dist_per_tick_ = 0.0;
-
+    double rad_per_tick_;
+    int last_tick_left_ = 0;
+    int last_tick_right_ = 0;
+    bool first_read_ = true;
     // Các biến riêng lẻ (Giữ nguyên từ code gốc)
     double left_position_ = 0.0;
     double left_velocity_ = 0.0;

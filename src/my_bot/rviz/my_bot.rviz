@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /RobotModel1
+        - /RobotModel1/Status1
         - /LaserScan1
         - /Grid2
       Splitter Ratio: 0.5
@@ -144,6 +145,8 @@ Visualization Manager:
           Value: true
         linkphutruoc:
           Value: true
+        odom:
+          Value: true
         world:
           Value: true
       Marker Scale: 0.30000001192092896
@@ -152,6 +155,8 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
+        odom:
+          {}
         world:
           base_link:
             linkbanhphai:
@@ -187,7 +192,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_link
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -204,7 +209,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 2.258629322052002
+      Distance: 0.8070259094238281
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -219,10 +224,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.724999725818634
+      Pitch: 0.17520365118980408
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 2.247999906539917
+      Yaw: 5.6061811447143555
     Saved: ~
 Window Geometry:
   Displays:
@@ -230,7 +235,7 @@ Window Geometry:
   Height: 831
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd000000010000000000000156000002e1fc0200000001fb000000100044006900730070006c006100790073010000003f000002e1000000cc00ffffff0000040c000002e100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000002a7000002e1fc0200000001fb000000100044006900730070006c006100790073010000003f000002e1000000cc00ffffff000002bb000002e100000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Width: 1384
   X: 56
   Y: 32
